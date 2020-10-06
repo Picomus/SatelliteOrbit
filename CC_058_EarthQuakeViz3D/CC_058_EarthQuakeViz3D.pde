@@ -4,31 +4,23 @@
 // https://youtu.be/dbs4IYGfAXc
 // https://editor.p5js.org/codingtrain/sketches/tttPKxZi
 
-
 float angle;
 PVector oberverPosition = new PVector();
 
-Table table;
 float r = 200;
-
 PImage earth;
 PShape globe;
-
 
 JSONObject temp, info;
 JSONArray pos;
 
 void setup() {
-  size(600, 600, P3D);
+  size(800, 800, P3D);
   earth = loadImage("earth.jpg");
-  // table = loadTable("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.csv", "header");
-  table = loadTable("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv", "header");
-
 
   temp = fetchSat(25544, 1);
   info = temp.getJSONObject("info");
   pos = temp.getJSONArray("positions");
-
 
   noStroke();
   globe = createShape(SPHERE, r);
@@ -39,7 +31,7 @@ void draw() {
   background(51);
   translate(width*0.5, height*0.5);
   rotateY(angle);
-  angle += 0.01;
+  angle += 0.10;
 
   lights();
   fill(200);
@@ -47,13 +39,12 @@ void draw() {
   //sphere(r);
   shape(globe);
   
-  color red = color(#ff0000);
-  
-  renderSat(24455,red); // ISS
-  renderSat(23463,red);
-  renderSat(44360,red);
-  renderSat(44058,red); // ONEWEB-0010
-  renderSat(39765, red); // Kosmos 2499
+  // Satelites 
+  renderSat(24455,color(#ff0000)); // ISS
+  renderSat(23463,color(#00ff00)); // TSIKADA
+  renderSat(44360,color(#ccff00)); //CP-9 LEO
+  renderSat(44058,color(#ff0099)); // ONEWEB-0010
+  renderSat(39765, color(#ffff00)); // Kosmos 2499
 }
 
 //6455PZ-FHRN5J-HZSC3K-4KH2 API LICENSe KEY
@@ -68,14 +59,18 @@ JSONObject fetchSat(int ID, float seconds) {
   return fetchSat(ID, 55.780276, 12.516251, 0, seconds);
 }
 
+
+
+
 void renderSat(int id, color col) {
   JSONObject tempSat, info;
   JSONArray pos;
 
-  tempSat = fetchSat(id, 1);
+  tempSat = fetchSat(id, 300);
   info = tempSat.getJSONObject("info");
   pos = tempSat.getJSONArray("positions");
   
+  //JSONObject val = pos.getJSONObject(millis()/1000%300);
   JSONObject val = pos.getJSONObject(0);
 
   float lat = val.getFloat("satlatitude");
@@ -100,4 +95,10 @@ void renderSat(int id, color col) {
   fill(col);
   box(5, 5, 5);
   popMatrix();
+}
+
+void renderSatNames(int id, color col){
+  fill(col);
+  text(id, 100, 100);
+
 }
