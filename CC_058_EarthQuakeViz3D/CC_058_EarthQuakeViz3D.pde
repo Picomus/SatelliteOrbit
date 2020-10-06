@@ -14,6 +14,7 @@ JSONObject temp, info;
 JSONArray pos;
 
 JSONObject ISS;
+JSONObject TSIKADA;
 
 void setup() {
   size(800, 800, P3D);
@@ -51,19 +52,19 @@ void draw() {
   //renderSat(39765,color(#ffff00)); // Kosmos 2499
 
   if (ISS == null || globalIndex == updateFrequency-1) { // run this loop at 50 it makes it smooth.
-   // asks the database for the info when needed
-    ISS = fetchSat(39765, updateFrequency);
+    // asks the database for the info when needed
+    ISS = fetchSat(24455, updateFrequency);
+    TSIKADA = fetchSat(23463, updateFrequency);
     globalIndex = 0;
   }
   // regardless the sattelite is drawn  
   renderSat(ISS, color(#ffff00), (globalIndex % updateFrequency));
+  renderSat(TSIKADA, color(#ffff00), (globalIndex % updateFrequency));
+  
   // time advances
-  if(millis() % 1000 == 0){
+  if (millis() % 1000 == 0) {
     globalIndex ++;
   }
-  
-  
-  
 }
 
 
@@ -71,7 +72,7 @@ float timeTester(float amount, float cycels) {
   int t = millis();
 
   for (int i = 0; i < cycels; i++) {
-     fetchSat(25544, amount);
+    fetchSat(25544, amount);
   }
   return ((millis() - t)/cycels) / amount;
 }
