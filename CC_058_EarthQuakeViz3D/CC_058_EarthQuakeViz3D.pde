@@ -39,7 +39,7 @@ void draw() {
   background(51);
   translate(width*0.5, height*0.5);
   rotateY(angle);
-  angle += 0.05;
+  angle += 0.01;
 
   lights();
   fill(200);
@@ -53,6 +53,7 @@ void draw() {
   renderSat(23463,red);
   renderSat(44360,red);
   renderSat(44058,red); // ONEWEB-0010
+  renderSat(39765, red); // Kosmos 2499
 }
 
 //6455PZ-FHRN5J-HZSC3K-4KH2 API LICENSe KEY
