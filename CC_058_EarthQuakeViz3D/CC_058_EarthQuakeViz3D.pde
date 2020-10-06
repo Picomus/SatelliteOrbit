@@ -10,20 +10,16 @@ float r = 200;
 PImage earth;
 PShape globe;
 
-JSONObject temp, info;
-JSONArray pos;
 
 JSONObject ISS;
 JSONObject TSIKADA;
+JSONObject CPNineLEO;
+
+JSONObject[] satellites = new JSONObject[5];
 
 void setup() {
   size(800, 800, P3D);
   earth = loadImage("earth.jpg");
-
-  temp = fetchSat(25544, 1);
-  info = temp.getJSONObject("info");
-  pos = temp.getJSONArray("positions");
-
   noStroke();
   globe = createShape(SPHERE, r);
   globe.setTexture(earth);
@@ -43,30 +39,30 @@ void draw() {
   noStroke();
   //sphere(r);
   shape(globe);
-
-  // Satelites 
-  //renderSat(24455,color(#ff0000)); // ISS
+ 
+  //renderSat(25544,color(#ff0000)); // ISS
   //renderSat(23463,color(#00ff00)); // TSIKADA
   //renderSat(44360,color(#ccff00)); //CP-9 LEO
   //renderSat(44058,color(#ff0099)); // ONEWEB-0010
   //renderSat(39765,color(#ffff00)); // Kosmos 2499
 
-  if (ISS == null || globalIndex == updateFrequency-1) { // run this loop at 50 it makes it smooth.
+  if (ISS == null || globalIndex == updateFrequency-1) {
     // asks the database for the info when needed
-    ISS = fetchSat(24455, updateFrequency);
+    ISS = fetchSat(25544, updateFrequency);
     TSIKADA = fetchSat(23463, updateFrequency);
+    CPNineLEO = fetchSat(44360, updateFrequency);
     globalIndex = 0;
   }
-  // regardless the sattelite is drawn  
-  renderSat(ISS, color(#ffff00), (globalIndex % updateFrequency));
-  renderSat(TSIKADA, color(#ffff00), (globalIndex % updateFrequency));
   
-  // time advances
+  renderSat(ISS, color(#ffff00), (globalIndex % updateFrequency));
+  renderSat(TSIKADA, color(#00ff00), (globalIndex % updateFrequency));
+  renderSat(CPNineLEO, color(#0000ff), (globalIndex % updateFrequency));
+  
+  // index advances if time has passed
   if (millis() % 1000 == 0) {
     globalIndex ++;
   }
 }
-
 
 float timeTester(float amount, float cycels) {
   int t = millis();
