@@ -14,18 +14,25 @@ float r = 200;
 PImage earth;
 PShape globe;
 
+ 
+JSONObject temp, info;
+JSONArray pos;
 
 void setup() {
   size(600, 600, P3D);
   earth = loadImage("earth.jpg");
   // table = loadTable("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.csv", "header");
   table = loadTable("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.csv", "header");
+  
+  
+  temp = fetchSat(25544, 1);
+  info = temp.getJSONObject("info");
+  pos = temp.getJSONArray("positions");
+  
 
   noStroke();
   globe = createShape(SPHERE, r);
   globe.setTexture(earth);
-  
-  renderSat(25544);
 }
 
 void draw() {
@@ -40,35 +47,35 @@ void draw() {
   //sphere(r);
   shape(globe);
 
-  //for (TableRow row : table.rows()) {
-  //  //TODO manage table
-  //  float lat = row.getFloat("latitude");
-  //  float lon = row.getFloat("longitude");
-  // // float mag = row.getFloat("mag");
-  // float alt = row.getFloat("alt");
+  JSONObject val = pos.getJSONObject(0);
+    
+    float lat = val.getFloat("satlatitude");
+    float lon = val.getFloat("satlongitude");
+   // float mag = row.getFloat("mag");
+   float alt = val.getFloat("sataltitude");
    
-  //  float theta = radians(lat);
+    float theta = radians(lat);
 
-  //  float phi = radians(lon) + PI;
+    float phi = radians(lon) + PI;
     
-  //  // fix: in OpenGL, y & z axes are flipped from math notation of spherical coordinates
-  //  float x = r * cos(theta) * cos(phi);
-  //  float y = -r * sin(theta);
-  //  float z = -r * cos(theta) * sin(phi);
+    // fix: in OpenGL, y & z axes are flipped from math notation of spherical coordinates
+    float x = r * cos(theta) * cos(phi);
+    float y = -r * sin(theta);
+    float z = -r * cos(theta) * sin(phi);
 
-  //  PVector pos = new PVector(x, y, z);
+    PVector pos = new PVector(x, y, z);
 
-  //  PVector xaxis = new PVector(1, 0, 0);
-  //  float angleb = PVector.angleBetween(xaxis, pos);
-  //  PVector raxis = xaxis.cross(pos);
+    PVector xaxis = new PVector(1, 0, 0);
+    float angleb = PVector.angleBetween(xaxis, pos);
+    PVector raxis = xaxis.cross(pos);
     
-  //  pushMatrix();
-  //  translate(x, y, z);
-  //  rotate(angleb, raxis.x, raxis.y, raxis.z);
-  //  fill(255);
-  //  box(alt, 5, 5);
-  //  popMatrix();
-  //}
+    pushMatrix();
+    translate(x+alt * 0.03, y, z);
+    rotate(angleb, raxis.x, raxis.y, raxis.z);
+    fill(255);
+    box(5, 5, 5);
+    popMatrix();
+  
 }
 
 //6455PZ-FHRN5J-HZSC3K-4KH2 API LICENSe KEY
@@ -83,24 +90,22 @@ JSONObject fetchSat(int ID, float seconds){
   return fetchSat(ID,55.780276, 12.516251, 0, seconds);
 }
 
-void renderSat(int ID){
-  JSONObject temp = fetchSat(ID, 1);
-  JSONObject info = temp.getJSONObject("info");
-  JSONArray pos = temp.getJSONArray("positions");
-
-  // find the posetion of the sat
+//void renderSat(int ID){
+//  JSONObject temp = fetchSat(ID, 1);
+//  JSONObject info = temp.getJSONObject("info");
+//  JSONArray pos = temp.getJSONArray("positions");
   
   
-  // draw the cube
-    pushMatrix();
-    // rotate with obs. angel
-    // translate out
-    // rotate with sat angle
-    // translate out
-    // make sphere
+//    pushMatrix();
+//    // rotate with obs. angel
     
-    //translate(x, y, z);
-    fill(255);
-    sphere(2);
-    popMatrix();
-}
+//    // translate out
+//    // rotate with sat angle
+//    // translate out
+//    // make sphere
+    
+//    //translate(x, y, z);
+//    fill(255);
+//    sphere(2);
+//    popMatrix();
+//}
