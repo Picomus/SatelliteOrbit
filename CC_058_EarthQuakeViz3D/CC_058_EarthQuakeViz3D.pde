@@ -5,7 +5,6 @@
 // https://editor.p5js.org/codingtrain/sketches/tttPKxZi
 
 float angle;
-PVector oberverPosition = new PVector();
 
 float r = 200;
 PImage earth;
@@ -13,6 +12,8 @@ PShape globe;
 
 JSONObject temp, info;
 JSONArray pos;
+
+JSONObject ISS;
 
 void setup() {
   size(800, 800, P3D);
@@ -27,25 +28,56 @@ void setup() {
   globe.setTexture(earth);
 }
 
+int globalIndex =0;
+int updateFrequency = 300;
+
 void draw() {
   background(51);
   translate(width*0.5, height*0.5);
   rotateY(angle);
-  angle += 0.10;
+  angle += 0.01;
 
   lights();
   fill(200);
   noStroke();
   //sphere(r);
   shape(globe);
-  
+
   // Satelites 
-  renderSat(24455,color(#ff0000)); // ISS
-  renderSat(23463,color(#00ff00)); // TSIKADA
-  renderSat(44360,color(#ccff00)); //CP-9 LEO
-  renderSat(44058,color(#ff0099)); // ONEWEB-0010
-  renderSat(39765, color(#ffff00)); // Kosmos 2499
+  //renderSat(24455,color(#ff0000)); // ISS
+  //renderSat(23463,color(#00ff00)); // TSIKADA
+  //renderSat(44360,color(#ccff00)); //CP-9 LEO
+  //renderSat(44058,color(#ff0099)); // ONEWEB-0010
+  //renderSat(39765,color(#ffff00)); // Kosmos 2499
+
+  if (ISS == null || globalIndex == updateFrequency-1) { // run this loop at 50 it makes it smooth.
+   // asks the database for the info when needed
+    ISS = fetchSat(39765, updateFrequency);
+    globalIndex = 0;
+  }
+  // regardless the sattelite is drawn  
+  renderSat(ISS, color(#ffff00), (globalIndex % updateFrequency));
+  // time advances
+  if(millis() % 1000 == 0){
+    globalIndex ++;
+  }
+  
+  
+  
 }
+
+
+float timeTester(float amount, float cycels) {
+  int t = millis();
+
+  for (int i = 0; i < cycels; i++) {
+     fetchSat(25544, amount);
+  }
+  return ((millis() - t)/cycels) / amount;
+}
+
+
+
 
 //6455PZ-FHRN5J-HZSC3K-4KH2 API LICENSe KEY
 
@@ -59,19 +91,24 @@ JSONObject fetchSat(int ID, float seconds) {
   return fetchSat(ID, 55.780276, 12.516251, 0, seconds);
 }
 
-
-
-
 void renderSat(int id, color col) {
+  renderSat(id, col, 0);
+}
+
+void renderSat(int id, color col, int index) {
+  renderSat(fetchSat(id, 300), col, index);
+}
+
+void renderSat(JSONObject _tempSat, color col, int index) {
   JSONObject tempSat, info;
   JSONArray pos;
 
-  tempSat = fetchSat(id, 300);
+  tempSat = _tempSat;
   info = tempSat.getJSONObject("info");
   pos = tempSat.getJSONArray("positions");
-  
+
   //JSONObject val = pos.getJSONObject(millis()/1000%300);
-  JSONObject val = pos.getJSONObject(0);
+  JSONObject val = pos.getJSONObject(index);
 
   float lat = val.getFloat("satlatitude");
   float lon = val.getFloat("satlongitude");
@@ -97,8 +134,7 @@ void renderSat(int id, color col) {
   popMatrix();
 }
 
-void renderSatNames(int id, color col){
+void renderSatNames(int id, color col) {
   fill(col);
   text(id, 100, 100);
-
 }
