@@ -103,12 +103,11 @@ void renderSat(int id, color col, int index) {
 }
 
 void renderSat(JSONObject _tempSat, color col, int index) {
-  JSONObject tempSat, info;
   JSONArray pos;
 
-  tempSat = _tempSat;
-  info = tempSat.getJSONObject("info");
-  pos = tempSat.getJSONArray("positions");
+ 
+  //info = _tempSat.getJSONObject("info");
+  pos = _tempSat.getJSONArray("positions");
 
   //JSONObject val = pos.getJSONObject(millis()/1000%300);
   JSONObject val = pos.getJSONObject(index);
@@ -130,8 +129,7 @@ void renderSat(JSONObject _tempSat, color col, int index) {
   PVector raxis = xaxis.cross(posi);
 
   pushMatrix();
-  translate((x/abs(x))* (200 + alt * 0.03), y, z);  
-  println((x/abs(x))* (200 + alt * 0.03));
+  translate((x/abs(x))* (200 + alt * 0.03), y, z);
   rotate(angleb, raxis.x, raxis.y, raxis.z);
   fill(col);
   box(5, 5, 5);
