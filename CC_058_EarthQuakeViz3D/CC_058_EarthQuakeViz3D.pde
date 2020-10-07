@@ -23,6 +23,7 @@ void setup() {
   noStroke();
   globe = createShape(SPHERE, r);
   globe.setTexture(earth);
+  fetchAll();
 }
 
 int globalIndex =0;
@@ -46,11 +47,9 @@ void draw() {
   //renderSat(44058,color(#ff0099)); // ONEWEB-0010
   //renderSat(39765,color(#ffff00)); // Kosmos 2499
 
-  if (ISS == null || globalIndex == updateFrequency-1) {
+  if (globalIndex == updateFrequency-1) {
     // asks the database for the info when needed
-    ISS = fetchSat(25544, updateFrequency);
-    TSIKADA = fetchSat(23463, updateFrequency);
-    CPNineLEO = fetchSat(44360, updateFrequency);
+    fetchAll();
     globalIndex = 0;
   }
   
@@ -63,6 +62,13 @@ void draw() {
     globalIndex ++;
   }
 }
+
+void fetchAll(){
+    ISS = fetchSat(25544, updateFrequency);
+    TSIKADA = fetchSat(23463, updateFrequency);
+    CPNineLEO = fetchSat(44360, updateFrequency);
+}
+
 
 float timeTester(float amount, float cycels) {
   int t = millis();
@@ -124,7 +130,8 @@ void renderSat(JSONObject _tempSat, color col, int index) {
   PVector raxis = xaxis.cross(posi);
 
   pushMatrix();
-  translate(x+alt * 0.03, y, z);
+  translate((x/abs(x))* (200 + alt * 0.03), y, z);  
+  println((x/abs(x))* (200 + alt * 0.03));
   rotate(angleb, raxis.x, raxis.y, raxis.z);
   fill(col);
   box(5, 5, 5);
