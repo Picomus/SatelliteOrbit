@@ -14,6 +14,7 @@ PShape globe;
 JSONObject ISS;
 JSONObject TSIKADA;
 JSONObject CPNineLEO;
+JSONObject ORSTED;
 
 JSONObject[] satellites = new JSONObject[5];
 
@@ -67,12 +68,14 @@ void renderSatellites(){
   renderSat(ISS, color(#ffff00), index);
   renderSat(TSIKADA, color(#00ff00), index);
   renderSat(CPNineLEO, color(#0000ff), index);
+  renderSat(ORSTED, color(#ff0000), index);
 }
 
 void fetchAll() {
   ISS = fetchSat(25544, updateFrequency);
   TSIKADA = fetchSat(23463, updateFrequency);
   CPNineLEO = fetchSat(44360, updateFrequency);
+  ORSTED = fetchSat(25635, updateFrequency);
 }
 
 float timeTester(float amount, float cycels) {
@@ -147,5 +150,4 @@ PVector toCartesian(float theta, float phi){
   float z = -r * cos(theta) * sin(phi);
 
   return new PVector(x, y, z);
-
 }
