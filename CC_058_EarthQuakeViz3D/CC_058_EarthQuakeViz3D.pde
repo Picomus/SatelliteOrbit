@@ -75,7 +75,6 @@ void fetchAll() {
   CPNineLEO = fetchSat(44360, updateFrequency);
 }
 
-
 float timeTester(float amount, float cycels) {
   int t = millis();
 
@@ -84,8 +83,6 @@ float timeTester(float amount, float cycels) {
   }
   return ((millis() - t)/cycels) / amount;
 }
-
-
 
 
 //6455PZ-FHRN5J-HZSC3K-4KH2 API LICENSe KEY
