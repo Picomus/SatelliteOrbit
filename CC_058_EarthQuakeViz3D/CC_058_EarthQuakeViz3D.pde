@@ -10,6 +10,8 @@ float r = 200;
 PImage earth;
 PShape globe;
 
+int globalIndex =0;
+int updateFrequency = 300;
 
 JSONObject ISS;
 JSONObject TSIKADA;
@@ -26,9 +28,6 @@ void setup() {
   globe.setTexture(earth);
   fetchAll();
 }
-
-int globalIndex =0;
-int updateFrequency = 300;
 
 void draw() {
   background(51);
@@ -50,16 +49,18 @@ void draw() {
 
   if (globalIndex == updateFrequency-1) {
     // asks the database for the info when needed
+    int time = millis();
     fetchAll();
+    println("DB call made, taking " +(millis()- time) + "ms");
     globalIndex = 0;
   }
-
   renderSatellites();
 
   // index advances if time has passed
-  if (millis() % 1000 == 0) {
+  if (millis() % 1000 >= 0 && millis() % 1000 <= 50) {
     globalIndex ++;
   }
+  
 }
 
 void renderSatellites(){
