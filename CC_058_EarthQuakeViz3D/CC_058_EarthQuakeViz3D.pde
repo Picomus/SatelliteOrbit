@@ -129,7 +129,8 @@ void renderSat(JSONObject _tempSat, color col, int index) {
   PVector raxis = xaxis.cross(posi);
 
   pushMatrix();
-  translate((x/abs(x))* (200 + alt * 0.03), y, z);
+  //translate((x/abs(x))* (200 + alt * 0.03), y, z);
+  translate(x + ((x/abs(x))*alt*0.03), y, z);
   rotate(angleb, raxis.x, raxis.y, raxis.z);
   fill(col);
   box(5, 5, 5);
