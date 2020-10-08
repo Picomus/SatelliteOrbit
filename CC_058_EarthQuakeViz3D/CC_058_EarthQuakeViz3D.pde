@@ -40,7 +40,7 @@ void draw() {
   noStroke();
   //sphere(r);
   shape(globe);
- 
+
   //renderSat(25544,color(#ff0000)); // ISS
   //renderSat(23463,color(#00ff00)); // TSIKADA
   //renderSat(44360,color(#ccff00)); //CP-9 LEO
@@ -52,21 +52,27 @@ void draw() {
     fetchAll();
     globalIndex = 0;
   }
-  
-  renderSat(ISS, color(#ffff00), (globalIndex % updateFrequency));
-  renderSat(TSIKADA, color(#00ff00), (globalIndex % updateFrequency));
-  renderSat(CPNineLEO, color(#0000ff), (globalIndex % updateFrequency));
-  
+
+  renderSatellites();
+
   // index advances if time has passed
   if (millis() % 1000 == 0) {
     globalIndex ++;
   }
 }
 
-void fetchAll(){
-    ISS = fetchSat(25544, updateFrequency);
-    TSIKADA = fetchSat(23463, updateFrequency);
-    CPNineLEO = fetchSat(44360, updateFrequency);
+void renderSatellites(){
+  int index = (globalIndex % updateFrequency);
+
+  renderSat(ISS, color(#ffff00), index);
+  renderSat(TSIKADA, color(#00ff00), index);
+  renderSat(CPNineLEO, color(#0000ff), index);
+}
+
+void fetchAll() {
+  ISS = fetchSat(25544, updateFrequency);
+  TSIKADA = fetchSat(23463, updateFrequency);
+  CPNineLEO = fetchSat(44360, updateFrequency);
 }
 
 
@@ -105,7 +111,7 @@ void renderSat(int id, color col, int index) {
 void renderSat(JSONObject _tempSat, color col, int index) {
   JSONArray pos;
 
- 
+
   //info = _tempSat.getJSONObject("info");
   pos = _tempSat.getJSONArray("positions");
 
@@ -118,19 +124,15 @@ void renderSat(JSONObject _tempSat, color col, int index) {
   float theta = radians(lat);
   float phi = radians(lon) + PI;
 
-  float x = r * cos(theta) * cos(phi);
-  float y = -r * sin(theta);
-  float z = -r * cos(theta) * sin(phi);
-
-  PVector posi = new PVector(x, y, z);
+   PVector cartPos =toCartesian(theta, phi);
 
   PVector xaxis = new PVector(1, 0, 0);
-  float angleb = PVector.angleBetween(xaxis, posi);
-  PVector raxis = xaxis.cross(posi);
+  float angleb = PVector.angleBetween(xaxis, cartPos);
+  PVector raxis = xaxis.cross(cartPos);
 
   pushMatrix();
   //translate((x/abs(x))* (200 + alt * 0.03), y, z);
-  translate(x + ((x/abs(x))*alt*0.03), y, z);
+  translate(cartPos.x + ((cartPos.x/abs(cartPos.x))*alt*0.03), cartPos.y, cartPos.z);
   rotate(angleb, raxis.x, raxis.y, raxis.z);
   fill(col);
   box(5, 5, 5);
@@ -140,4 +142,13 @@ void renderSat(JSONObject _tempSat, color col, int index) {
 void renderSatNames(int id, color col) {
   fill(col);
   text(id, 100, 100);
+}
+
+PVector toCartesian(float theta, float phi){
+  float x = r * cos(theta) * cos(phi);
+  float y = -r * sin(theta);
+  float z = -r * cos(theta) * sin(phi);
+
+  return new PVector(x, y, z);
+
 }
