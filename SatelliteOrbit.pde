@@ -8,6 +8,7 @@ PShape globe;
 
 int globalIndex =0;
 int updateFrequency = 300;
+int lastTime = second();
 
 JSONObject ISS;
 JSONObject TSIKADA;
@@ -53,10 +54,19 @@ void draw() {
   renderSatellites();
 
   // index advances if time has passed
-  if (millis() % 1000 >= 0 && millis() % 1000 <= 50) {
-    globalIndex ++;
-  }
+  //if (millis() % 1000 >= 0 && millis() % 1000 <= 50) {
+  //  globalIndex ++;
+  //}
   
+  
+  if(second() > lastTime){
+  globalIndex ++;
+  lastTime = second();
+    if(second() ==59){
+      lastTime = 0;
+    }
+  
+  }
 }
 
 void renderSatellites(){
