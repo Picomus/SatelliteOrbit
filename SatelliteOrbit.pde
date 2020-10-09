@@ -1,4 +1,4 @@
-// Original code from: 3D Earthquake Data Visualization at The Coding Train & Daniel Shiffman
+// Original code from: 3D Earthquake Data Visualization at The Coding Train & Daniel Shiffman //<>//
 
 float angle;
 
@@ -7,7 +7,9 @@ PImage earth;
 PShape globe;
 
 int globalIndex =0;
-int updateFrequency = 300;
+int updateFrequency = 60;
+boolean requestInProgress;
+int timeOfLastIncrase = 0;
 
 JSONObject ISS;
 JSONObject TSIKADA;
@@ -26,10 +28,11 @@ void setup() {
 }
 
 void draw() {
+  println(globalIndex);
   background(51);
   translate(width*0.5, height*0.5);
   rotateY(angle);
-  angle += 0.01;
+  //angle += 0.01;
 
   lights();
   fill(200);
@@ -43,23 +46,31 @@ void draw() {
   //renderSat(44058,color(#ff0099)); // ONEWEB-0010
   //renderSat(39765,color(#ffff00)); // Kosmos 2499
 
-  if (globalIndex == updateFrequency-1) {
+  if (globalIndex == updateFrequency-5 && !requestInProgress) {
+    requestInProgress = true;
     // asks the database for the info when needed
     int time = millis();
-    fetchAll();
+    //fetchAll();
+    thread("fetchAll");
     println("DB call made, taking " +(millis()- time) + "ms");
-    globalIndex = 0;
+    //globalIndex = 0;
   }
   renderSatellites();
-
   // index advances if time has passed
-  if (millis() % 1000 >= 0 && millis() % 1000 <= 50) {
+  //if (millis() % 1000 >= 0 && millis() % 1000 <= 50) {
+  //  globalIndex ++;
+  //}
+
+  if (second() > (timeOfLastIncrase)) {
     globalIndex ++;
+    timeOfLastIncrase = second();
+    if (second() == 59) {
+      timeOfLastIncrase = 0;
+    }
   }
-  
 }
 
-void renderSatellites(){
+void renderSatellites() {
   int index = (globalIndex % updateFrequency);
 
   renderSat(ISS, color(#ffff00), index);
@@ -69,10 +80,19 @@ void renderSatellites(){
 }
 
 void fetchAll() {
+  int t = millis();
   ISS = fetchSat(25544, updateFrequency);
   TSIKADA = fetchSat(23463, updateFrequency);
   CPNineLEO = fetchSat(44360, updateFrequency);
   ORSTED = fetchSat(25635, updateFrequency);
+
+  println("Sats fetched" +(millis()- t) + "ms" );
+
+  globalIndex = 3;
+
+  requestInProgress = false;
+  //println("GI reset number" + ((millis()- t)/1000 + 1));
+  //globalIndex = (int) (millis()- t)/1000 + 1;
 }
 
 float timeTester(float amount, float cycels) {
@@ -102,7 +122,7 @@ void renderSat(int id, color col) {
 }
 
 void renderSat(int id, color col, int index) {
-  renderSat(fetchSat(id, 300), col, index);
+  renderSat(fetchSat(id, updateFrequency), col, index);
 }
 
 void renderSat(JSONObject _tempSat, color col, int index) {
@@ -121,7 +141,7 @@ void renderSat(JSONObject _tempSat, color col, int index) {
   float theta = radians(lat);
   float phi = radians(lon) + PI;
 
-   PVector cartPos =toCartesian(theta, phi);
+  PVector cartPos =toCartesian(theta, phi);
 
   PVector xaxis = new PVector(1, 0, 0);
   float angleb = PVector.angleBetween(xaxis, cartPos);
@@ -141,7 +161,7 @@ void renderSatNames(int id, color col) {
   text(id, 100, 100);
 }
 
-PVector toCartesian(float theta, float phi){
+PVector toCartesian(float theta, float phi) {
   float x = r * cos(theta) * cos(phi);
   float y = -r * sin(theta);
   float z = -r * cos(theta) * sin(phi);
