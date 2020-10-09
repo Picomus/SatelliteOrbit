@@ -88,7 +88,6 @@ float timeTester(float amount, float cycels) {
   return ((millis() - t)/cycels) / amount;
 }
 
-
 //6455PZ-FHRN5J-HZSC3K-4KH2 API LICENSe KEY
 
 JSONObject fetchSat(int ID, float observer_lat, float observer_lng, float observer_alt, float seconds) {
